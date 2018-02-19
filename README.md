@@ -11,3 +11,4 @@ Features :
   * accepts user-defined macros and command plugins,
   * evaluates expressions by JSR-223
 
+This repository lists some code examples of LunaSQL.
