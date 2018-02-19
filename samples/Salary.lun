@@ -1,0 +1,9 @@
+-- Liste des numéros d'employés en fichier
+file eachln employees.dat {arg idemp
+  -- Recherche du nom (et du salaire) de l'employé en base SQL
+  for -q [SELECT NAME, SAL FROM EMPLOYEES WHERE ID=$idemp] {
+    if [$col2 > 1000] {
+      print "$col1 est riche, il gagne $col2 !"
+    }
+  }
+}
