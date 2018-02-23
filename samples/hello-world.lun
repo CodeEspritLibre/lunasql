@@ -1,0 +1,10 @@
+/**
+ * Simple Hello World example
+ */
+ 
+print "Hello, World!"
+ 
+-- or
+
+def name World
+print "Hello, $name"
