@@ -1,0 +1,17 @@
+/*
+ * Loop for example with query
+ *
+ * Loop over a fruits list in a file (a number per line) and outputs a message
+ * Let's imagine a table TB_FRUITS with fields ID, NAME, SIZE
+ */
+
+-- IDs in file fruits.dat, reading each id
+file eachln fruits.dat { arg id
+  -- lookup the name and the size (cm) of the fruit in database
+  for -q [SELECT NAME, SIZE FROM TB_FRUITS WHERE ID=$id] {
+    if [$col2 > 10] {  -- i.e. size > 10cm
+      print "the fruit $col1 is quite big, $col2 cm!"
+    }
+  }
+}
+
