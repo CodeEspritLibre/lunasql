@@ -1,0 +1,29 @@
+/*
+ * Macro example
+ *
+ * Definition of a fruit counter macro (with embbeded SQL command) and its documentation
+ * Let's imagine a table TB_FRUITS with 6 records 'banana', 8 records 'apple'
+ */
+ 
+-- This version outputs a string
+defmacro count-fruit {type} {
+  print "Number of $type(s): $[SELECT count(*) FROM TB_FRUITS WHERE TYPE='$type']"
+} "
+  Fruit counter for a given type <type>.
+  "
+
+-- Usage
+count-fruit banana
+-- outputs: Number of banana(s): 6
+
+
+-- This version returns a number for later usage
+defmacro count-fruit {type} {
+  return $[SELECT count(*) FROM TB_FRUITS WHERE TYPE='$type']
+} "
+  Fruit counter for a given type <type>.
+  "
+
+-- Usage
+print "Number of apples: $[count-fruit apple]"
+-- outputs: Number of apples: 8
