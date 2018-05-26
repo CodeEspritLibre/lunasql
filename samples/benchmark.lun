@@ -39,7 +39,7 @@ defmacro facto2 n:int {
 }
 
 /*
- * Let's run theses two macros <facto1> and <facto2> and see which is faster!
+ * Let's run these two macros <facto1> and <facto2> and see which one is faster!
  */
 facto1 20	  -- 116 ms
 facto2 20	  --  32 ms
@@ -71,6 +71,9 @@ defmacro apply2 n:int {
   }
 }
 
+/*
+ * Let's run these two macros <apply1> and <apply2> and see which one is faster!
+ */
 apply1 20	  -- 75 ms
 apply2 20	  -- 86 ms
 
