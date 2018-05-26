@@ -14,7 +14,7 @@ defmacro count-fruit {type} {
 
 -- Usage
 count-fruit banana
--- outputs: Number of banana(s): 6
+-- outputs: Number of bananas: 6
 
 
 -- This version returns a number for later usage
