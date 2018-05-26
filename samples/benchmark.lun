@@ -1,0 +1,79 @@
+/*
+ * Some quick benchmarks
+ *
+ * We would like to know if the use of local variables in functions or the use
+ * of the command ARG (which declares local variables based on local arg1...)
+ * increase the execution time of a function.
+ * NOTE: the ms results and conclusions are only indicative
+ */
+
+/*
+ * iter: iterate 300 times the function <func> and output the execution time
+ */
+defmacro iter {name func} {
+  time init
+  for -r i 300 func
+  print "$name : $[time chron]"
+}
+
+/*** 1) Does the use of $arg1, $arg2 increase the execution time? ***/
+
+/*
+ * facto1: call <iter> on an anonymous function which computes the product of
+ *  a range of [1..n] numbers with method 'reduce'
+ */
+defm facto1 n:int {
+  iter facto1 {
+    list reduce $[list shift $[list range $(n%+1)]] { $arg1 * $arg2 }
+  }
+}
+
+/*
+ * facto2: call <iter> on an anonymous function which computes the product of
+ *  a range of [1..n] numbers with method 'join' then 'eval'. Is it faster?
+ */
+defm facto2 n:int {
+  iter facto2 {
+    eval $[list join $[list shift $[list range $(n%+1)]] *]
+  }
+}
+
+/*
+ * Let's run theses two macros <facto1> and <facto2> and see which is faster!
+ */
+facto1 20	  -- 116 ms
+facto2 20	  --  32 ms
+
+/*
+ * --> the use of local variables is much slower
+ */
+
+
+/*** 2) Does the use of ARG increase the execution time? ***/
+
+/*
+ * apply1: create a new range by applying a double fonction on a range of
+ * [1..n] numbers; the fontion doesn't use ARG, only normal local variables
+ */
+defm apply1 n:int {
+  iter apply1 {
+    list apply $[list range $(n%+1)] { $arg1*2 }
+  }
+}
+
+/*
+ * apply2: create a new range by applying a double fonction on a range of
+ * [1..n] numbers; the fontion uses ARG, in addition to normal local variables
+ */
+defm apply2 n:int {
+  iter apply2 {
+    list apply $[list range $(n%+1)] { arg a; $a*2 }
+  }
+}
+
+apply1 20	  -- 75 ms
+apply2 20	  -- 86 ms
+
+/*
+ * --> the use of ARG instead of normal local variables is slightly slower
+ */
