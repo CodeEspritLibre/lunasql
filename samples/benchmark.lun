@@ -34,7 +34,7 @@ defmacro facto1 n:int {
  */
 defmacro facto2 n:int {
   iter facto2 {
-    eval $[list join $[list shift $[list range $(n%+1)]] *]
+    eval $[list join $[list range 1:$(n%+1)] *]
   }
 }
 
