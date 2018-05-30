@@ -24,7 +24,7 @@ defmacro iter {name func} {
  */
 defmacro facto1 n:int {
   iter facto1 {
-    list reduce $[list shift $[list range $(n%+1)]] { $arg1 * $arg2 }
+    list reduce $[list range 1:$(n%+1)] { $arg1 * $arg2 }
   }
 }
 
