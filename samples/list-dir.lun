@@ -4,10 +4,10 @@
  * Definition of a directory file lister macro (like 'dir' command) and its documentation
  */
 
-defmacro list-dir {} {
+defmacro list-dir {[pattern .*]} {
   print "$[str rpad File 30]  Dir?         Size"
   print $<'-'*50>
-  for f $[file glob . $(*arg1?.*)] {
+  for f $[file glob . $pattern] {
     print "$[str rpad $f 30]  $[file dir? $f]    $[str lpad $[file size $f] 12]"
   }
 } "
@@ -20,10 +20,9 @@ defmacro list-dir {} {
 
 
 /* 
-Usage : 
-    list-dir
+Example usages : 
 
-Output example :
+SQL> list-dir
 File                            Dir?         Size
 --------------------------------------------------
 test.sql                        0              479
@@ -34,5 +33,15 @@ plugins                         1             4096
 test.dat                        0               30
 todo.txt                        0              684
 init.sql                        0              212
+tests                           1             4096
 .settings                       1             4096
+
+SQL> list-dir t.*
+File                            Dir?         Size
+--------------------------------------------------
+test.sql                        0              479
+test.dat                        0               30
+todo.txt                        0              684
+tests                           1             4096
 */
+
