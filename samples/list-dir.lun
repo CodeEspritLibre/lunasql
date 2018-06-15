@@ -1,0 +1,38 @@
+/*
+ * Macro example
+ *
+ * Definition of a directory file lister macro (like 'dir' command) and its documentation
+ */
+
+defmacro list-dir {} {
+  print "$[str rpad File 30]  Dir?         Size"
+  print $<'-'*50>
+  for f $[file glob . $(*arg1?.*)] {
+    print "$[str rpad $f 30]  $[file dir? $f]    $[str lpad $[file size $f] 12]"
+  }
+} "
+  Liste les fichiers du répertoire courant et leur taille
+   Usage : list-dir [pattern]
+   <pattern> : patron regexp de fichiers, par défaut : .*
+   Exemple : liste des fichiers ne commençant pas par '.' :
+     list-dir ^"^[^.].*^"
+  "
+
+
+/* 
+Usage : 
+    list-dir
+
+Output example :
+File                            Dir?         Size
+--------------------------------------------------
+test.sql                        0              479
+src                             1             4096
+build.xml                       0             3533
+dist                            1             4096
+plugins                         1             4096
+test.dat                        0               30
+todo.txt                        0              684
+init.sql                        0              212
+.settings                       1             4096
+*/
