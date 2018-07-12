@@ -2,6 +2,10 @@
  * Macro example
  *
  * Definition of a directory file lister macro (like 'dir' command) and its documentation
+ *
+ * defmacro is a macro which defines macros. It takes here 4 arguments: the name of the
+ * new macro (list-dir), its armuments (here between [] because optional), the body of the
+ * macro and the doc to be diplayed by the command: help list-dir
  */
 
 defmacro list-dir {[pattern .*]} {
@@ -14,7 +18,7 @@ defmacro list-dir {[pattern .*]} {
   Liste les fichiers du répertoire courant et leur taille
    Usage : list-dir [pattern]
    <pattern> : patron regexp de fichiers, par défaut : .*
-   Exemple : liste des fichiers ne commençant pas par '.' :
+   Exemple : obtenir la liste des fichiers ne commençant pas par '.' :
      list-dir ^"^[^.].*^"
   "
 
