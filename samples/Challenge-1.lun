@@ -1,0 +1,86 @@
+/**
+ * Challenge for a demo of LunaSQL:
+
+ * Make a callable command which takes as argument a list of studies and a
+ * dictionary of options, and treats the studies as follow:
+ * - if the creation date is after a threshold date, the patients included in
+ *   the study are updated to open and a service result is added to the patient
+ * - if not, the study is deleted
+ * Features : dict options arguments, logging, documentation
+ */
+
+need 4.7.8
+opt -l :EXIT_ON_ERR 1   -- we exit on error
+
+/**
+ * macro updateStudies
+ * @param fileName the file containing the studies numbers
+ *                 precondition : the file must exist
+ * @param options  a dictionary with options keys:
+ *                 fromDate: treatment threshold date, or this year if empty
+ *                 logFile : log file name, or no log if empty
+ */
+defmacro updateStudies {fileName [options] / { $[file exists? $fileName] }} {
+  use sys   -- for logging functions
+
+  -- Options et locals
+  def -l optFromDate  $[dict get $options fromDate 01/01/$[time now 'yyyy']]
+  def -l optLogFile   $[dict get $options logFile]
+  def -l studyDelCount,patientUpdCount 0 0
+
+  -- Creating  logging
+  def -l log $(optLogFile#empty?)
+  if $log { log-new $optLogFile }
+
+  -- Iterate on file : 1 study number per line
+  for -f studyNumber $fileName {
+    -- check the validity of the line with regexp
+    if !$(studyNumber/\d+) { error "Invalid study number : $studyNumber" }
+
+    -- getting the study as a dictionary
+    def -l study $[seek SELECT * FROM STUDIES WHERE ID = $studyNumber]
+    -- checking study  creation date
+    if $[time diff $optFromDate $(study,CREATION_DATE)]>=0 {
+      -- we now iterate on SELECT statment as a cursor
+      for -q [SELECT * FROM PATIENTS WHERE STUDY_ID = $studyNumber] {
+        def -l patientNumber    $col1 -- NUM
+        -- updating state to 'open'
+        UPDATE PATIENTS SET STATE = 'O' WHERE ID = $patientNumber
+        if $log { log-str "Patient updated : $patientNumber" }
+        void $(patientUpdCount#inc!)
+        -- inserting service 'result' for this patient (date now, amount 100.0)
+        INSERT INTO SERVICES VALUES(null,
+            $patientNumber, 'result', 'a', NOW(), 100.0, 'O')
+      }
+    } else {
+      -- Deleting this study
+      DELETE FROM STUDIES WHERE ID = $studyNumber
+      if $log { log-str "Study deleted : $studyNumber" }
+      void $(studyDelCount#inc!)
+    }
+  }
+
+    -- Closing logging and report
+  if $log { log-end $optLogFile }
+  print "$studyDelCount studies deleted, $patientUpdCount patients updated"
+} "
+  Updates the patients and insert services of a list of studies supplied in a
+  file according to a treatment threshold date.
+  Arguments
+    fileName : the file containing the studies numbers
+    options  : a dictionary with options keys fromDate, logFile
+  Examples
+    updateStudies list-studies.txt {
+      fromDate : 01/01/2017
+      logFile  : updateStudies.log
+    }
+  "
+
+-- Run the macro
+updateStudies studies.txt   -- traitment of studies of this year
+updateStudies studies.txt {
+    fromDate: 01/01/2017
+    logFile: updateStudies-190105.log
+}
+-- Documentation
+help updateStudies
