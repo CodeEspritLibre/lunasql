@@ -1,0 +1,43 @@
+SQL> def MYTABLE TEST_TABLE
+=> TEST_TABLE
+
+SQL> CREATE TABLE $MYTABLE (
+02 01(   i INT PRIMARY KEY,
+03 01(   s VARCHAR
+04 01(   )
+-> objet créé (7 ms)
+=> 0
+
+SQL> for value [5 12 22 37 42] {
+02 01{   if [$value > 20] {
+03 02{     INSERT INTO $MYTABLE VALUES ($value, 'String of $value')
+04 02{     }
+05 01{   }
+-> 1 ligne insérée (1 ms)
+-> 1 ligne insérée (0 ms)
+-> 1 ligne insérée (0 ms)
+=> 1
+
+SQL> defmacro query {tableName} {
+02 01{   print "Querying table $tableName..."
+03 01{   SELECT * FROM $tableName
+04 01{   }
+
+SQL> query $MYTABLE
+Querying table TEST_TABLE...
++---+----+--------------+
+| # | I  |       S      |
++---+----+--------------+
+| 1 | 22 | String of 22 |
+| 2 | 37 | String of 37 |
+| 3 | 42 | String of 42 |
++---+----+--------------+
+-> 3 lignes trouvées (11 ms)
+=> 22
+
+SQL> print "Average value of I field: $[SELECT AVG(i) FROM $MYTABLE]"
+Average value of I field: 33
+
+SQL> DROP TABLE $MYTABLE
+-> objet supprimé (8 ms)
+=> 0
