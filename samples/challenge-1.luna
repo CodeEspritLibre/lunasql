@@ -9,7 +9,7 @@
  * Features : dict options arguments, logging, documentation
  */
 
-need 4.7.8
+need 4.9
 opt -l :EXIT_ON_ERR 1   -- we exit on error
 
 /**
@@ -29,8 +29,8 @@ defmacro updateStudies {fileName [options] / { $[file exists? $fileName] }} {
   def -l studyDelCount,patientUpdCount 0 0
 
   -- Creating  logging
-  def -l log $(optLogFile#empty?)
-  if $log { log-new $optLogFile }
+  def -l islog $(optLogFile#empty?)
+  if $islog { log-new $optLogFile }
 
   -- Iterate on file : 1 study number per line
   for -f studyNumber $fileName {
@@ -46,7 +46,7 @@ defmacro updateStudies {fileName [options] / { $[file exists? $fileName] }} {
         def -l patientNumber    $col1 -- NUM
         -- updating state to 'open'
         UPDATE PATIENTS SET STATE = 'O' WHERE ID = $patientNumber
-        if $log { log-str "Patient updated : $patientNumber" }
+        if $islog { log "Patient updated : $patientNumber" }
         void $(patientUpdCount#inc!)
         -- inserting service 'result' for this patient (date now, amount 100.0)
         INSERT INTO SERVICES VALUES(null,
@@ -55,13 +55,13 @@ defmacro updateStudies {fileName [options] / { $[file exists? $fileName] }} {
     } else {
       -- Deleting this study
       DELETE FROM STUDIES WHERE ID = $studyNumber
-      if $log { log-str "Study deleted : $studyNumber" }
+      if $islog { log "Study deleted : $studyNumber" }
       void $(studyDelCount#inc!)
     }
   }
 
     -- Closing logging and report
-  if $log { log-end $optLogFile }
+  if $islog { log-end $optLogFile }
   print "$studyDelCount studies deleted, $patientUpdCount patients updated"
 } "
   Updates the patients and insert services of a list of studies supplied in a

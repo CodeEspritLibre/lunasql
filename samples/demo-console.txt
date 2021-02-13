@@ -41,3 +41,5 @@ Average value of I field: 33
 SQL> DROP TABLE $MYTABLE
 -> objet supprimé (8 ms)
 => 0
+
+... et voilà

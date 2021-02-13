@@ -8,9 +8,9 @@
 -- IDs in file fruits.dat, reading each id
 file eachln fruits.dat { arg id
   -- lookup the name and the size (cm) of the fruit in database
-  for -q [SELECT NAME, SIZE FROM TB_FRUITS WHERE ID=$id] {
-    if [$col2 > 10] {  -- i.e. size > 10cm
-      print "the fruit $col1 is quite big, $col2 cm!"
+  for -qn [SELECT NAME, SIZE FROM TB_FRUITS WHERE ID=$id] {
+    if [$SIZE > 10] {  -- i.e. size > 10cm
+      print "the fruit $NAME is quite big, $SIZE cm!"
     }
   }
 }

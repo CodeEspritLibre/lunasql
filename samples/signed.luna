@@ -1,0 +1,36 @@
+/*
+ * Signed sample script
+ *
+ * From the 4.9 version on, scripts can be digitally signed using Ed25579 keys.
+ * The signature verification is performed before running the script, according to
+ * the security policy defined in configuration.
+ *
+ * Public key and signature timestamp are embbeded into the signature (102 bytes).
+ * The signature bytes can then be written in a detached file, or appended to the
+ * signed script (as done below).
+ */
+
+need 4.9   -- anyway, for previous versions, no signature is checked!
+
+/*
+ * Say hello to the Dame!
+ * @param name the Dame's name
+ */
+defmacro greetings {name} {
+  print "Hello, $(name)! How are you?"
+} "
+  Say hello!
+  "
+
+-- main macro
+def -l main {
+  greetings "Madame"
+}
+
+main
+
+
+/* $$ BEGIN SIGNATURE $$
+b44KLUzfsfaIatVpkCDFH3ONnoZvMnAZn7vDsJDzI9ABd5z6s6wIOstcx6QfqCi6ajMj
+rMbuCJcwKWtsTplkiDx/4UQgPtReEKvogWfjsxG/nDzSlcsli44zMHhb4NgnvFKyw60P
+ * $$ END SIGNATURE $$ */
