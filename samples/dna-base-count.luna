@@ -1,0 +1,95 @@
+/**
+ * Bioinformatics/base count challenge
+ * https://rosettacode.org/wiki/Bioinformatics/base_count
+ *
+ * Given a string representing ordered DNA bases, do:
+ * "Pretty print" the sequence followed by a summary of the counts of each of
+ * the bases (A, C, G, and T) in the sequence, and print the total count of each
+ * base in the string.
+ */
+
+-- set here the DNA input sequence
+def -l dnaInput "
+CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATG
+CTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTG
+AGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGAT
+GGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT
+CGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGG
+TCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA
+TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTAT
+CGCCGCGATGCTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTG
+TCCTAAATTTGAATGGCAAACACAAATAAGATTTAGCAATTCGTGTAGAC
+GACCGGGGACTTGCATGATGGGAGCAGCTTTGTTAAACTACGAACGTAAT
+"
+
+-- set here the pretty print base count per line
+-- it is good to choose a multiple of 3 (mRNA codon size)
+def -l printSize   60
+
+def adenineCount,cytosineCount,guanineCount,thymineCount  0 0 0 0
+def invalidCount,printedIndex,totalCount  0 0 0
+
+def -l dnaRaw $[str replace $dnaInput `\s` ""]
+
+def -l printDnaRange {
+  arg index count
+  print " $[str lpad $index 4] :  $[str substr $dnaRaw $index:$count]"
+}
+
+print "Sequence:$<n>"
+
+for base $[str split $dnaRaw ""] {
+  if [$(totalCount#inc!) % $printSize == 0] {
+    printDnaRange $printedIndex $totalCount
+    def printedIndex $totalCount
+  }
+
+  case $base ^
+      A { . $(adenineCount#inc!) } ^
+      C { . $(cytosineCount#inc!) } ^
+      G { . $(guanineCount#inc!) } ^
+      T { . $(thymineCount#inc!) } ^
+   else { . $(invalidCount#inc!) }
+}
+
+if [$printedIndex < $totalCount] {
+  printDnaRange $printedIndex $totalCount
+}
+
+print "
+Base Count:
+
+    A :  $adenineCount
+    C :  $cytosineCount
+    G :  $guanineCount
+    T :  $thymineCount
+$[$invalidCount > 0 ? '  ERR :  $(invalidCount)\n' : '']
+ Total:  $totalCount"
+
+undef adenineCount cytosineCount guanineCount thymineCount
+undef invalidCount printedIndex totalCount
+return
+
+
+/* Output:
+Sequence:
+
+    0 :  CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGCTTT
+   60 :  CCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGA
+  120 :  GCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCG
+  180 :  AGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGT
+  240 :  TCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA
+  300 :  TTTAATTTTTCTATATAGCGATCTGTATTTAAGCAATTCATTTAGGTTATCGCCGCGATG
+  360 :  CTCGGTTCGGACCGCCAAGCATCTGGCTCCACTGCTAGTGTCCTAAATTTGAATGGCAAA
+  420 :  CACAAATAAGATTTAGCAATTCGTGTAGACGACCGGGGACTTGCATGATGGGAGCAGCTT
+  480 :  TGTTAAACTACGAACGTAAT
+
+Base Count:
+
+    A :  129
+    C :  97
+    G :  119
+    T :  155
+
+ Total:  500
+*/
